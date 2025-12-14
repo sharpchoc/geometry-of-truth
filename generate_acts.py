@@ -41,10 +41,10 @@ def get_acts(statements, model, layers, remote=True):
     acts = {}
     with model.trace(statements, remote=remote, **tracer_kwargs):
         for layer in layers:
-            acts[layer] = model.model.layers[layer].output[0][:,-1,:].save()
+            acts[layer] = model.model.layers[layer].output[:,-1,:].save()
 
     for layer, act in acts.items():
-        acts[layer] = act.value
+        acts[layer] = getattr(act, "value", act)
     
     return acts
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     read statements from dataset, record activations in given layers, and save to specified files
     """
     parser = argparse.ArgumentParser(description="Generate activations for statements in a dataset")
-    parser.add_argument("--model", default="llama-13b",
+    parser.add_argument("--model", default="llama-3.2-3B",
                         help="Size of the model to use. Options are 7B or 30B")
     parser.add_argument("--layers", nargs='+', type=int,
                         help="Layers to save embeddings from")
@@ -63,8 +63,14 @@ if __name__ == "__main__":
                         help="Directory to save activations to")
     parser.add_argument("--noperiod", action="store_true", default=False,
                         help="Set flag if you don't want to add a period to the end of each statement")
-    parser.add_argument("--device", default="remote")
+    parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
+    if args.datasets is None:
+        # args.datasets = ['cities', 'neg_cities', 'larger_than', 'smaller_than', 'sp_en_trans', 'neg_sp_en_trans']
+        args.datasets = ['likely']
+    if args.layers is None:
+        # args.layers = [-1]
+        args.layers = [9, 10, 11, 12, 13, 14, 15]
 
     t.set_grad_enabled(False)
     model = load_model(args.model, args.device)

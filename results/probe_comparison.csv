@@ -1,0 +1,5 @@
+model,probe,cities,cities+neg_cities,larger_than,larger_than+smaller_than
+llama-3.2-3B,LRProbe,0.615,0.807,0.567,0.889
+llama-3.2-3B,MMProbe,0.724,0.808,0.634,0.91
+llama-3.2-3B-Instruct,LRProbe,0.866,0.918,0.815,0.938
+llama-3.2-3B-Instruct,MMProbe,0.835,0.886,0.825,0.969

@@ -8,6 +8,13 @@ import json
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+DEBUG = False
+if DEBUG:
+    tracer_kwargs = {'scan': True, 'validate': True}
+else:
+    tracer_kwargs = {'scan': False, 'validate': False}
+
+
 def get_few_shot_accuracy(datasets, model, n_shots=5, batch_size=32, calibrated=True, remote=True):
     """Compute the few-shot accuracy of the model on the given datasets.
     Returns a list of dictionaries with experimental results, namely:
@@ -46,16 +53,17 @@ def get_few_shot_accuracy(datasets, model, n_shots=5, batch_size=32, calibrated=
         out['prompt'] = prompt
 
         # cache activations over the prompt for reuse
-        with model.forward(output_hidden_states=True, remote=remote, remote_include_output=remote) as runner:
-            with runner.invoke(prompt):
-                pass
-        past_key_values = runner.output['past_key_values']
+        # with model.forward(output_hidden_states=True, remote=remote, remote_include_output=remote) as runner:
+        #     with runner.invoke(prompt):
+        #         pass
+        # past_key_values = runner.output['past_key_values']
 
         # get completions and evaluate accuracy
         true_idx, false_idx = model.tokenizer.encode(' TRUE')[-1], model.tokenizer.encode(' FALSE')[-1]
         diffs = []
         for batch_idx in range(0, len(queries), batch_size):
             batch = queries.iloc[batch_idx:batch_idx+batch_size]['statement'].tolist()
+            batch = [prompt + b for b in batch]
 
             # # prepare past_key_values
             # pkv_batch = tuple((
@@ -65,14 +73,13 @@ def get_few_shot_accuracy(datasets, model, n_shots=5, batch_size=32, calibrated=
             # )
 
             batch_lens = [len(model.tokenizer.encode(query, add_special_tokens=False)) for query in batch]
-            with model.forward(past_key_values=past_key_values
-            , remote=remote, remote_include_output=False) as runner:
-                with runner.invoke(batch, add_special_tokens=False, return_attention_mask=False):
+            with t.no_grad():
+                with model.trace(batch, remote=remote, **tracer_kwargs):
                     logits = model.lm_head.output
                     logits = logits[t.arange(len(batch)), t.tensor(batch_lens) - 1, :]
                     probs = logits.softmax(-1)
                     diffs.append((probs[:, true_idx] - probs[:, false_idx]).save())
-        diffs = t.cat([diff.value for diff in diffs])
+        diffs = t.cat([diff for diff in diffs])
 
 
         # if calibrated, compute calibration constant
@@ -99,13 +106,27 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--datasets', type=str, nargs='+', help='datasets to evaluate on')
-    parser.add_argument('--model', type=str, default='llama-2-70b', help='model size to evaluate')
+    parser.add_argument('--model', type=str, default='llama-3.2-3B-Instruct', help='model size to evaluate')
     parser.add_argument('--n_shots', type=int, default=5, help='number of shots to use')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size to use')
     parser.add_argument('--uncalibrated', action='store_true', default=False, help='set flag if using uncalibrated few shot')
-    parser.add_argument('--device', default='remote', help='device to use')
+    parser.add_argument('--device', default='cuda', help='device to use')
 
     args = parser.parse_args()
+    if args.datasets is None:
+        args.datasets = [
+            'cities',
+            'neg_cities',
+            'larger_than',
+            'smaller_than',
+            'sp_en_trans',
+            'neg_sp_en_trans',
+            # 'cities_cities_conj',
+            # 'cities_cities_disj',
+            # 'companies_true_false',
+            # 'common_claim_true_false',
+            # 'counterfact_true_false'    
+        ]
 
     model = load_model(args.model, device=args.device)
 

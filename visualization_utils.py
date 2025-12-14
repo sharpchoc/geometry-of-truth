@@ -68,13 +68,20 @@ class TruthData:
         
         # shuffle rows of df
         df = df.sample(frac=1)
+        df = df.copy()
+        df["dataset"] = df.index.get_level_values(0)
         
         # plot using plotly
         if dimensions == 2:
-            fig = px.scatter(df, x='PC1', y='PC2', 
-                             hover_name='statement', 
-                             color_continuous_scale='Bluered_r',
-                             **kwargs)
+            fig = px.scatter(
+                    df,
+                    x='PC1',
+                    y='PC2',
+                    hover_name='statement',
+                    symbol='dataset',     # 👈 THIS is the key line
+                    color_continuous_scale='Bluered_r',
+                    **kwargs
+                )
         elif dimensions == 3:
             fig = px.scatter_3d(df, x='PC1', y='PC2', z='PC3', 
                                 hover_name='statement', 

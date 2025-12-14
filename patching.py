@@ -6,6 +6,12 @@ import json
 import argparse
 from generate_acts import load_model
 
+DEBUG = False
+if DEBUG:
+    tracer_kwargs = {'scan': True, 'validate': True}
+else:
+    tracer_kwargs = {'scan': False, 'validate': False}
+
 
 def patching_experiment(model_name, continuation_idx=None, device='remote'):
 
@@ -49,11 +55,10 @@ The Spanish word 'uno' means 'one'. This statement is:"""
     n_toks = sames[::-1].index(False) + 1
 
     true_acts = []
-    with model.forward(remote=remote, remote_include_output=False) as runner:
-        with runner.invoke(true_prompt):
-            for layer in model.model.layers:
-                true_acts.append(layer.output[0].save())
-    true_acts = [act.value for act in true_acts]
+    with model.trace(true_prompt, remote=remote):
+        for layer in model.model.layers:
+            true_acts.append(layer.output.save())
+    # true_acts = [act.value for act in true_acts]
 
     if continuation_idx is not None: # if picking up an experiment that failed
         with open('experimental_outputs/patching_results.json', 'r') as f:
@@ -85,13 +90,12 @@ The Spanish word 'uno' means 'one'. This statement is:"""
         for layer_idx, layer in enumerate(model.model.layers):
             if logit_diffs[tok_idx - 1][layer_idx] is not None:
                 continue # already computed
-            with model.forward(remote=remote, remote_include_output=False) as runner:
-                with runner.invoke(false_prompt, scan=True) as invoker:
-                    layer.output[0][0,-tok_idx,:] = true_acts[layer_idx][0,-tok_idx,:]
-                    logits = model.lm_head.output
-                    logit_diff = logits[0, -1, t_tok] - logits[0, -1, f_tok]
-                    logit_diff = logit_diff.save()
-            logit_diffs[tok_idx - 1][layer_idx] = logit_diff.value.item()
+            with model.trace(false_prompt, remote=remote):
+                layer.output[0,-tok_idx,:] = true_acts[layer_idx][0,-tok_idx,:]
+                logits = model.lm_head.output
+                logit_diff = logits[0, -1, t_tok] - logits[0, -1, f_tok]
+                logit_diff = logit_diff.save()
+            logit_diffs[tok_idx - 1][layer_idx] = logit_diff.item()
             
             outs[continuation_idx] = out
             with open('experimental_outputs/patching_results.json', 'w') as f:
@@ -99,9 +103,9 @@ The Spanish word 'uno' means 'one'. This statement is:"""
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='llama-2-70b')
+    parser.add_argument('--model', type=str, default='llama-3.2-3B')
     parser.add_argument('--continuation_idx', type=int, default=None)
-    parser.add_argument('--device', type=str, default='remote')
+    parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
 
     patching_experiment(args.model, args.continuation_idx, args.device)

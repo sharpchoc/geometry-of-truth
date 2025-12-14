@@ -10,7 +10,13 @@ import json
 import argparse
 import configparser
 
-def intervention_experiment(model, queries, direction, hidden_states, intervention='none', batch_size=32, remote=True):
+DEBUG = False
+if DEBUG:
+    tracer_kwargs = {'scan': True, 'validate': True}
+else:
+    tracer_kwargs = {'scan': False, 'validate': False}
+
+def intervention_experiment(model, queries, direction, strength, hidden_states, batch_size=5, remote=True):
     """
     model : an nnsight LanguageModel
     queries : a list of statements to be labeled
@@ -23,8 +29,6 @@ def intervention_experiment(model, queries, direction, hidden_states, interventi
     and sum P(TRUE) + P(FALSE) averaged over the data
     """
 
-    assert intervention in ['none', 'add', 'subtract']
-
     true_idx, false_idx = model.tokenizer.encode(' TRUE')[-1], model.tokenizer.encode(' FALSE')[-1]
     len_suffix = len(model.tokenizer.encode('This statement is:'))
 
@@ -32,17 +36,17 @@ def intervention_experiment(model, queries, direction, hidden_states, interventi
     tots = []
     for batch_idx in range(0, len(queries), batch_size):
         batch = queries[batch_idx:batch_idx+batch_size]
-        with model.forward(remote=remote, remote_include_output=False) as runner:
-            with runner.invoke(batch):
-                for layer, offset in hidden_states:
-                    model.model.layers[layer].output[0][:,-len_suffix + offset, :] += \
-                        direction if intervention == 'add' else -direction if intervention == 'subtract' else 0.
-                logits = model.lm_head.output[:, -1, :]
-                probs = logits.softmax(-1)
-                p_diffs.append((probs[:, true_idx] - probs[:, false_idx]).save())
-                tots.append((probs[:, true_idx] + probs[:, false_idx]).save())
-    p_diffs = t.cat([p_diff.value for p_diff in p_diffs])
-    tots = t.cat([tot.value for tot in tots])
+        for layer, offset in hidden_states:
+            with t.no_grad():
+                with model.trace(batch, remote=remote, **tracer_kwargs):
+                    model.model.layers[layer].output[:,-len_suffix + offset, :] += \
+                        direction * strength
+                    logits = model.lm_head.output[:, -1, :]
+                    probs = logits.softmax(-1)
+                    p_diffs.append((probs[:, true_idx] - probs[:, false_idx]).save())
+                    tots.append((probs[:, true_idx] + probs[:, false_idx]).save())
+    p_diffs = t.cat([p_diff for p_diff in p_diffs])
+    tots = t.cat([tot for tot in tots])
 
     return p_diffs.mean().item(), tots.mean().item()
 
@@ -72,14 +76,14 @@ def prepare_data(prompt, dataset, subset='all'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='llama-2-70b')
-    parser.add_argument('--probe', default='LRProbe')
-    parser.add_argument('--train_datasets', nargs='+', default=['cities', 'neg_cities'], type=str)
+    parser.add_argument('--model', default='llama-3.2-3B-Instruct')
+    parser.add_argument('--probe', default='MMProbe')
+    parser.add_argument('--train_datasets', nargs='+', default=['likely'], type=str)
     parser.add_argument('--val_dataset', default = 'sp_en_trans', type=str)
     parser.add_argument('--batch_size', default=32, type=int)
-    parser.add_argument('--intervention', default='none', type=str)
-    parser.add_argument('--subset', default='all', type=str)
-    parser.add_argument('--device', default='remote', type=str)
+    parser.add_argument('--intervention', default='2', type=str)
+    parser.add_argument('--subset', default='false', type=str)
+    parser.add_argument('--device', default='cuda', type=str)
     args = parser.parse_args()
 
     remote = args.device == 'remote'
@@ -102,73 +106,92 @@ if __name__ == '__main__':
         for layer in range(start_layer, end_layer + 1):
             hidden_states.append((layer, -1))
             hidden_states.append((layer, 0))
-    
-    print('training probe...')
-    # get direction along which to intervene
-    ProbeClass = eval(args.probe)
-    if ProbeClass == LRProbe or ProbeClass == MMProbe or ProbeClass == 'random':
-        acts, labels = [], []
-        for dataset in args.train_datasets:
-            acts.append(collect_acts(dataset, args.model, end_layer, noperiod=noperiod).to('cuda:0'))
-            labels.append(t.Tensor(pd.read_csv(f'datasets/{dataset}.csv')['label'].tolist()).to('cuda:0'))
-        acts, labels = t.cat(acts), t.cat(labels)
-        if ProbeClass == LRProbe or ProbeClass == MMProbe:
-            probe = ProbeClass.from_data(acts, labels, device='cuda:0')
-        elif ProbeClass == 'random':
-            probe = MMProbe.from_data(acts, labels, device='cuda:0')
-            probe.direction = t.nn.Parameter(t.randn_like(probe.direction))
-    elif ProbeClass == CCSProbe:
-        acts = collect_acts(args.train_datasets[0], args.model, end_layer, noperiod=noperiod).to('cuda:0')
-        neg_acts = collect_acts(args.train_datasets[1], args.model, end_layer, noperiod=noperiod).to('cuda:0')
-        labels = t.Tensor(pd.read_csv(f'datasets/{args.train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
-        probe = ProbeClass.from_data(acts, neg_acts, labels=labels, device='cuda:0')
+    for train_set in [['cities'], ['cities', 'neg_cities'], ['larger_than'], ['larger_than', 'smaller_than'], ['likely']]:
+        print(f"train set {train_set}")
+        args.train_datasets = train_set
+        print('training probe...')
+        # get direction along which to intervene
+        ProbeClass = eval(args.probe)
+        if ProbeClass == LRProbe or ProbeClass == MMProbe or ProbeClass == 'random':
+            acts, labels = [], []
+            for dataset in args.train_datasets:
+                acts.append(collect_acts(dataset, args.model, end_layer, noperiod=noperiod).to('cuda:0'))
+                labels.append(t.Tensor(pd.read_csv(f'datasets/{dataset}.csv')['label'].tolist()).to('cuda:0'))
+            acts, labels = t.cat(acts), t.cat(labels)
+            if ProbeClass == LRProbe or ProbeClass == MMProbe:
+                probe = ProbeClass.from_data(acts, labels, device='cuda:0')
+            elif ProbeClass == 'random':
+                probe = MMProbe.from_data(acts, labels, device='cuda:0')
+                probe.direction = t.nn.Parameter(t.randn_like(probe.direction))
+        elif ProbeClass == CCSProbe:
+            acts = collect_acts(args.train_datasets[0], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            neg_acts = collect_acts(args.train_datasets[1], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            labels = t.Tensor(pd.read_csv(f'datasets/{args.train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
+            probe = ProbeClass.from_data(acts, neg_acts, labels=labels, device='cuda:0')
 
-    direction = probe.direction
-    true_acts, false_acts = acts[labels==1], acts[labels==0]
-    true_mean, false_mean = true_acts.mean(0), false_acts.mean(0)
-    direction = direction / direction.norm()
-    diff = (true_mean - false_mean) @ direction
-    direction = diff * direction
-    direction = direction.cpu()
+        direction = probe.direction
+        true_acts, false_acts = acts[labels==1], acts[labels==0]
+        true_mean, false_mean = true_acts.mean(0), false_acts.mean(0)
+        direction = direction / direction.norm()
+        diff = (true_mean - false_mean) @ direction
+        direction = diff * direction
+        # direction is from true to false
+        direction = direction.cuda()
 
-    # set prompt (hardcoded for now)
-    if args.model == 'llama-2-70b' and args.val_dataset == 'sp_en_trans':
-        prompt = """\
-The Spanish word 'fruta' means 'goat'. This statement is: FALSE
-The Spanish word 'carne' means 'meat'. This statement is: TRUE
-"""
-    elif args.model == 'llama-2-13b' and args.val_dataset == 'sp_en_trans':
-        prompt = """\
-The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE
-The Spanish word 'escribir' means 'to write'. This statement is: TRUE
-The Spanish word 'gato' means 'cat'. This statement is: TRUE
-The Spanish word 'aire' means 'silver'. This statement is: FALSE
-"""
-    
-    # prepare data
-    queries = prepare_data(prompt, args.val_dataset, subset=args.subset)
+        # set prompt (hardcoded for now)
+        if args.model == 'llama-2-70b' and args.val_dataset == 'sp_en_trans':
+            prompt = """\
+    The Spanish word 'fruta' means 'goat'. This statement is: FALSE
+    The Spanish word 'carne' means 'meat'. This statement is: TRUE
+    """
+        elif args.model == 'llama-2-13b' and args.val_dataset == 'sp_en_trans':
+            prompt = """\
+    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE
+    The Spanish word 'escribir' means 'to write'. This statement is: TRUE
+    The Spanish word 'gato' means 'cat'. This statement is: TRUE
+    The Spanish word 'aire' means 'silver'. This statement is: FALSE
+    """
+        else:
+            prompt = """\
+    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE
+    The Spanish word 'escribir' means 'to write'. This statement is: TRUE
+    The Spanish word 'gato' means 'cat'. This statement is: TRUE
+    The Spanish word 'aire' means 'silver'. This statement is: FALSE
+    """
+        
+        # prepare data
+        for side in ['true', 'false']:
+            args.subset = side
+            print(f"subset: {args.subset}")
+            queries = prepare_data(prompt, args.val_dataset, subset=args.subset)
 
-    print('running intervention experiment...')
-    # do intervention experiment
-    p_diff, tot = intervention_experiment(model, queries, direction, hidden_states,
-                                          intervention=args.intervention, batch_size=args.batch_size, remote=remote)
+            print('running intervention experiment...')
+            # do intervention experiment
+            if args.subset == 'true':
+                strengths = [-2, -1, 0]
+            elif args.subset == 'false':
+                strengths = [0, 1, 2]
+            else:
+                strengths = [-2, -1, 0, 1, 2]
+            for strength in strengths:
+                p_diff, tot = intervention_experiment(model, queries, direction, strength, hidden_states, batch_size=args.batch_size, remote=remote)
 
-    # save results
-    out = {
-        'model' : args.model,
-        'train_datasets' : args.train_datasets,
-        'val_dataset' : args.val_dataset,
-        'probe class' : ProbeClass.__name__,
-        'prompt' : prompt,
-        'p_diff' : p_diff,
-        'tot' : tot,
-        'intervention' : args.intervention,
-        'subset' : args.subset,
-        'hidden_states' : hidden_states,
-    }
+                # save results
+                out = {
+                    'model' : args.model,
+                    'train_datasets' : args.train_datasets,
+                    'val_dataset' : args.val_dataset,
+                    'probe class' : ProbeClass.__name__,
+                    'prompt' : prompt,
+                    'p_diff' : p_diff,
+                    'tot' : tot,
+                    'intervention_strength' : strength,
+                    'subset' : args.subset,
+                    'hidden_states' : hidden_states,
+                }
 
-    with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
-        data = json.load(f)
-    data.append(out)
-    with open('experimental_outputs/label_change_intervention_results.json', 'w') as f:
-        json.dump(data, f, indent=4)
+                with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
+                    data = json.load(f)
+                data.append(out)
+                with open('experimental_outputs/label_change_intervention_results.json', 'w') as f:
+                    json.dump(data, f, indent=4)
