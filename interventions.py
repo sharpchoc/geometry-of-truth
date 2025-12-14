@@ -106,9 +106,12 @@ if __name__ == '__main__':
         for layer in range(start_layer, end_layer + 1):
             hidden_states.append((layer, -1))
             hidden_states.append((layer, 0))
-    for train_set in [['cities'], ['cities', 'neg_cities'], ['larger_than'], ['larger_than', 'smaller_than'], ['likely']]:
+    for train_set in [['random']]:
         print(f"train set {train_set}")
-        args.train_datasets = train_set
+        if train_set[0] == 'random':
+            args.train_datasets = ['cities']
+        else:
+            args.train_datasets = train_set
         print('training probe...')
         # get direction along which to intervene
         ProbeClass = eval(args.probe)
@@ -137,6 +140,13 @@ if __name__ == '__main__':
         direction = diff * direction
         # direction is from true to false
         direction = direction.cuda()
+        
+        if train_set[0] == 'random':
+            with t.no_grad():
+                rand_dir = t.randn_like(probe.direction)
+                rand_dir = rand_dir / rand_dir.norm()
+                direction.copy_(rand_dir)
+            args.train_datasets = train_set
 
         # set prompt (hardcoded for now)
         if args.model == 'llama-2-70b' and args.val_dataset == 'sp_en_trans':

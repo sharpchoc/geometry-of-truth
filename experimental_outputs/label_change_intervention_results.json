@@ -8332,5 +8332,335 @@
                 0
             ]
         ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": 0.8515625,
+        "tot": 0.99609375,
+        "intervention_strength": -2,
+        "subset": "true",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": 0.84765625,
+        "tot": 0.99609375,
+        "intervention_strength": -1,
+        "subset": "true",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": 0.84375,
+        "tot": 0.99609375,
+        "intervention_strength": 0,
+        "subset": "true",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": -0.95703125,
+        "tot": 0.99609375,
+        "intervention_strength": 0,
+        "subset": "false",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": -0.95703125,
+        "tot": 0.99609375,
+        "intervention_strength": 1,
+        "subset": "false",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
+    },
+    {
+        "model": "llama-3.2-3B-Instruct",
+        "train_datasets": [
+            "random"
+        ],
+        "val_dataset": "sp_en_trans",
+        "probe class": "MMProbe",
+        "prompt": "    The Spanish word 'jirafa' means 'giraffe'. This statement is: TRUE\n    The Spanish word 'escribir' means 'to write'. This statement is: TRUE\n    The Spanish word 'gato' means 'cat'. This statement is: TRUE\n    The Spanish word 'aire' means 'silver'. This statement is: FALSE\n    ",
+        "p_diff": -0.95703125,
+        "tot": 0.99609375,
+        "intervention_strength": 2,
+        "subset": "false",
+        "hidden_states": [
+            [
+                9,
+                -1
+            ],
+            [
+                9,
+                0
+            ],
+            [
+                10,
+                -1
+            ],
+            [
+                10,
+                0
+            ],
+            [
+                11,
+                -1
+            ],
+            [
+                11,
+                0
+            ],
+            [
+                12,
+                -1
+            ],
+            [
+                12,
+                0
+            ],
+            [
+                13,
+                -1
+            ],
+            [
+                13,
+                0
+            ]
+        ]
     }
 ]
