@@ -76,7 +76,7 @@ def prepare_data(prompt, dataset, subset='all'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='llama-3.2-3B-Instruct')
+    parser.add_argument('--model', default='llama-3.2-3B')
     parser.add_argument('--probe', default='MMProbe')
     parser.add_argument('--train_datasets', nargs='+', default=['likely'], type=str)
     parser.add_argument('--val_dataset', default = 'sp_en_trans', type=str)
