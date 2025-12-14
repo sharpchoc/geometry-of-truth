@@ -1,1 +1,182 @@
-[]
+[
+    {
+        "dataset": "cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Pretoria is in India.",
+            "The city of Phnom Penh is in Cambodia.",
+            "The city of Ulhasnagar is in India.",
+            "The city of Busan is in Brazil.",
+            "The city of Putian is in Vietnam."
+        ],
+        "prompt": "The city of Pretoria is in India. FALSE\nThe city of Phnom Penh is in Cambodia. TRUE\nThe city of Ulhasnagar is in India. TRUE\nThe city of Busan is in Brazil. FALSE\nThe city of Putian is in Vietnam. FALSE\n",
+        "gamma": -0.00015544891357421875,
+        "acc": 0.7518443465232849,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "neg_cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Varanasi is not in India.",
+            "The city of Serang is not in Indonesia.",
+            "The city of Kolkata is not in Japan.",
+            "The city of Novokuznetsk is not in Russia.",
+            "The city of Teresina is not in Vietnam."
+        ],
+        "prompt": "The city of Varanasi is not in India. FALSE\nThe city of Serang is not in Indonesia. FALSE\nThe city of Kolkata is not in Japan. TRUE\nThe city of Novokuznetsk is not in Russia. FALSE\nThe city of Teresina is not in Vietnam. TRUE\n",
+        "gamma": -0.000885009765625,
+        "acc": 0.4708249270915985,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "larger_than",
+        "n_shots": 5,
+        "shots": [
+            "Fifty-eight is larger than seventy-three.",
+            "Fifty-one is larger than eighty-two.",
+            "Fifty-five is larger than seventy-five.",
+            "Fifty-eight is larger than ninety-five.",
+            "Eighty-four is larger than eighty-three."
+        ],
+        "prompt": "Fifty-eight is larger than seventy-three. FALSE\nFifty-one is larger than eighty-two. FALSE\nFifty-five is larger than seventy-five. FALSE\nFifty-eight is larger than ninety-five. FALSE\nEighty-four is larger than eighty-three. TRUE\n",
+        "gamma": -1.239776611328125e-05,
+        "acc": 0.5493670701980591,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "smaller_than",
+        "n_shots": 5,
+        "shots": [
+            "Fifty-one is smaller than eighty-six.",
+            "Ninety-four is smaller than eighty-six.",
+            "Sixty-three is smaller than seventy-eight.",
+            "Eighty-eight is smaller than sixty-two.",
+            "Fifty-five is smaller than seventy-seven."
+        ],
+        "prompt": "Fifty-one is smaller than eighty-six. TRUE\nNinety-four is smaller than eighty-six. FALSE\nSixty-three is smaller than seventy-eight. TRUE\nEighty-eight is smaller than sixty-two. FALSE\nFifty-five is smaller than seventy-seven. TRUE\n",
+        "gamma": 0.00010013580322265625,
+        "acc": 0.44962024688720703,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'clase' means 'class'.",
+            "The Spanish word 'nada' means 'nothing'.",
+            "The Spanish word 'medio' means 'large'.",
+            "The Spanish word 'jirafa' means 'giraffe'.",
+            "The Spanish word 'ventana' means 'half'."
+        ],
+        "prompt": "The Spanish word 'clase' means 'class'. TRUE\nThe Spanish word 'nada' means 'nothing'. TRUE\nThe Spanish word 'medio' means 'large'. FALSE\nThe Spanish word 'jirafa' means 'giraffe'. TRUE\nThe Spanish word 'ventana' means 'half'. FALSE\n",
+        "gamma": 1.5861587598919868e-09,
+        "acc": 0.6389685273170471,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "neg_sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'oeste' does not mean 'moment'.",
+            "The Spanish word 'miedo' does not mean 'fear'.",
+            "The Spanish word 'esperanza' does not mean 'hope'.",
+            "The Spanish word 'esquina' does not mean 'corner'.",
+            "The Spanish word 'vaca' does not mean 'cow'."
+        ],
+        "prompt": "The Spanish word 'oeste' does not mean 'moment'. TRUE\nThe Spanish word 'miedo' does not mean 'fear'. FALSE\nThe Spanish word 'esperanza' does not mean 'hope'. FALSE\nThe Spanish word 'esquina' does not mean 'corner'. FALSE\nThe Spanish word 'vaca' does not mean 'cow'. FALSE\n",
+        "gamma": 1.1641532182693481e-09,
+        "acc": 0.4670487344264984,
+        "model": "llama-3.2-3B"
+    },
+    {
+        "dataset": "cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Kimhae is in South Korea.",
+            "The city of Yunfu is in Honduras.",
+            "The city of Orumiyeh is in Iran.",
+            "The city of Santiago de Cuba is in India.",
+            "The city of Buraydah is in Rwanda."
+        ],
+        "prompt": "The city of Kimhae is in South Korea. TRUE\nThe city of Yunfu is in Honduras. FALSE\nThe city of Orumiyeh is in Iran. TRUE\nThe city of Santiago de Cuba is in India. FALSE\nThe city of Buraydah is in Rwanda. FALSE\n",
+        "gamma": -5.4836273193359375e-06,
+        "acc": 0.7377598881721497,
+        "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "neg_cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Agadir is not in Morocco.",
+            "The city of Wanning is not in the United States.",
+            "The city of Peshawar is not in Pakistan.",
+            "The city of Hiroshima is not in Malaysia.",
+            "The city of Barquisimeto is not in Venezuela."
+        ],
+        "prompt": "The city of Agadir is not in Morocco. FALSE\nThe city of Wanning is not in the United States. TRUE\nThe city of Peshawar is not in Pakistan. FALSE\nThe city of Hiroshima is not in Malaysia. TRUE\nThe city of Barquisimeto is not in Venezuela. FALSE\n",
+        "gamma": -5.7220458984375e-05,
+        "acc": 0.6096579432487488,
+        "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "larger_than",
+        "n_shots": 5,
+        "shots": [
+            "Ninety-four is larger than seventy-eight.",
+            "Sixty-nine is larger than sixty-six.",
+            "Eighty-nine is larger than seventy-five.",
+            "Ninety-one is larger than seventy-six.",
+            "Ninety-three is larger than seventy-eight."
+        ],
+        "prompt": "Ninety-four is larger than seventy-eight. TRUE\nSixty-nine is larger than sixty-six. TRUE\nEighty-nine is larger than seventy-five. TRUE\nNinety-one is larger than seventy-six. TRUE\nNinety-three is larger than seventy-eight. TRUE\n",
+        "gamma": -2.1457672119140625e-06,
+        "acc": 0.7777215242385864,
+        "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "smaller_than",
+        "n_shots": 5,
+        "shots": [
+            "Ninety-five is smaller than eighty-one.",
+            "Sixty-seven is smaller than ninety-three.",
+            "Eighty-nine is smaller than sixty-nine.",
+            "Seventy-two is smaller than eighty-one.",
+            "Eighty-seven is smaller than ninety-four."
+        ],
+        "prompt": "Ninety-five is smaller than eighty-one. FALSE\nSixty-seven is smaller than ninety-three. TRUE\nEighty-nine is smaller than sixty-nine. FALSE\nSeventy-two is smaller than eighty-one. TRUE\nEighty-seven is smaller than ninety-four. TRUE\n",
+        "gamma": -1.8477439880371094e-06,
+        "acc": 0.6962025165557861,
+        "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'lista' means 'list'.",
+            "The Spanish word 'nube' means 'to write'.",
+            "The Spanish word 'concha' means 'shell'.",
+            "The Spanish word 'vaca' means 'cow'.",
+            "The Spanish word 'aprender' means 'light'."
+        ],
+        "prompt": "The Spanish word 'lista' means 'list'. TRUE\nThe Spanish word 'nube' means 'to write'. FALSE\nThe Spanish word 'concha' means 'shell'. TRUE\nThe Spanish word 'vaca' means 'cow'. TRUE\nThe Spanish word 'aprender' means 'light'. FALSE\n",
+        "gamma": 1.0913936421275139e-09,
+        "acc": 0.7249283790588379,
+        "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "neg_sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'semilla' does not mean 'seed'.",
+            "The Spanish word 'familia' does not mean 'family'.",
+            "The Spanish word 'desarrollar' does not mean 'to develop'.",
+            "The Spanish word 'mano' does not mean 'too'.",
+            "The Spanish word 'valle' does not mean 'face'."
+        ],
+        "prompt": "The Spanish word 'semilla' does not mean 'seed'. FALSE\nThe Spanish word 'familia' does not mean 'family'. FALSE\nThe Spanish word 'desarrollar' does not mean 'to develop'. FALSE\nThe Spanish word 'mano' does not mean 'too'. TRUE\nThe Spanish word 'valle' does not mean 'face'. TRUE\n",
+        "gamma": 6.28642737865448e-09,
+        "acc": 0.18911175429821014,
+        "model": "llama-3.2-3B-Instruct"
+    }
+]
