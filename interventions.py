@@ -77,6 +77,7 @@ def prepare_data(prompt, dataset, subset='all'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', default='llama-3.2-3B')
+    parser.add_argument('--activations_model', default='llama-3.2-3B-Instruct')
     parser.add_argument('--probe', default='MMProbe')
     parser.add_argument('--train_datasets', nargs='+', default=['likely'], type=str)
     parser.add_argument('--val_dataset', default = 'sp_en_trans', type=str)
@@ -96,7 +97,8 @@ if __name__ == '__main__':
     start_layer = eval(config[args.model]['intervene_layer'])
     end_layer = eval(config[args.model]['probe_layer'])
     noperiod = eval(config[args.model]['noperiod'])
-
+    if args.activations_model is None:
+        args.activations_model = args.model
     if noperiod:
         hidden_states = [
             (layer, -1) for layer in range(start_layer, end_layer + 1)
@@ -106,7 +108,7 @@ if __name__ == '__main__':
         for layer in range(start_layer, end_layer + 1):
             hidden_states.append((layer, -1))
             hidden_states.append((layer, 0))
-    for train_set in [['random']]:
+    for train_set in [['cities'], ['larger_than'], ['larger_than', 'smaller_than']]:
         print(f"train set {train_set}")
         if train_set[0] == 'random':
             args.train_datasets = ['cities']
@@ -118,7 +120,7 @@ if __name__ == '__main__':
         if ProbeClass == LRProbe or ProbeClass == MMProbe or ProbeClass == 'random':
             acts, labels = [], []
             for dataset in args.train_datasets:
-                acts.append(collect_acts(dataset, args.model, end_layer, noperiod=noperiod).to('cuda:0'))
+                acts.append(collect_acts(dataset, args.activations_model, end_layer, noperiod=noperiod).to('cuda:0'))
                 labels.append(t.Tensor(pd.read_csv(f'datasets/{dataset}.csv')['label'].tolist()).to('cuda:0'))
             acts, labels = t.cat(acts), t.cat(labels)
             if ProbeClass == LRProbe or ProbeClass == MMProbe:
@@ -127,8 +129,8 @@ if __name__ == '__main__':
                 probe = MMProbe.from_data(acts, labels, device='cuda:0')
                 probe.direction = t.nn.Parameter(t.randn_like(probe.direction))
         elif ProbeClass == CCSProbe:
-            acts = collect_acts(args.train_datasets[0], args.model, end_layer, noperiod=noperiod).to('cuda:0')
-            neg_acts = collect_acts(args.train_datasets[1], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            acts = collect_acts(args.train_datasets[0], args.activations_model, end_layer, noperiod=noperiod).to('cuda:0')
+            neg_acts = collect_acts(args.train_datasets[1], args.activations_model, end_layer, noperiod=noperiod).to('cuda:0')
             labels = t.Tensor(pd.read_csv(f'datasets/{args.train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
             probe = ProbeClass.from_data(acts, neg_acts, labels=labels, device='cuda:0')
 
@@ -198,6 +200,7 @@ if __name__ == '__main__':
                     'intervention_strength' : strength,
                     'subset' : args.subset,
                     'hidden_states' : hidden_states,
+                    'activation_model': args.activations_model,
                 }
 
                 with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
