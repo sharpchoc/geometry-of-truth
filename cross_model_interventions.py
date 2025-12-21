@@ -78,6 +78,7 @@ def prepare_data(prompt, dataset, subset='all'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', default='llama-3.1-8B-Instruct')
+    parser.add_argument('--activation_model', default='llama-3.1-8B')
     parser.add_argument('--val_dataset', default = 'sp_en_trans', type=str)
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--device', default='cuda', type=str)
@@ -95,10 +96,9 @@ if __name__ == '__main__':
     noperiod = eval(config[args.model]['noperiod'])
 
     probes = ['MMProbe', 'LRProbe']
-    # train_sets = [['cities'], ['larger_than'], ['larger_than', 'smaller_than']]
-    train_sets = [['cities', 'neg_cities']]
+    train_sets = train_sets = [['cities', 'neg_cities']]
     subsets = ['true', 'false']
-    strengths = [-5, -2, -1, 0, 1, 2, 5]
+    strengths = [-5, -2, 2, 5]
 
     for probe, train_datasets, subset, strength in product(probes, train_sets, subsets, strengths):
         print(f'testing {probe}, {train_datasets}, {subset}, {strength}')
@@ -118,7 +118,7 @@ if __name__ == '__main__':
         if ProbeClass == LRProbe or ProbeClass == MMProbe or ProbeClass == 'random':
             acts, labels = [], []
             for dataset in train_datasets:
-                acts.append(collect_acts(dataset, args.model, end_layer, noperiod=noperiod).to('cuda:0'))
+                acts.append(collect_acts(dataset, args.activation_model, end_layer, noperiod=noperiod).to('cuda:0'))
                 labels.append(t.Tensor(pd.read_csv(f'datasets/{dataset}.csv')['label'].tolist()).to('cuda:0'))
             acts, labels = t.cat(acts), t.cat(labels)
             if ProbeClass == LRProbe or ProbeClass == MMProbe:
@@ -127,8 +127,8 @@ if __name__ == '__main__':
                 probe = MMProbe.from_data(acts, labels, device='cuda:0')
                 probe.direction = t.nn.Parameter(t.randn_like(probe.direction))
         elif ProbeClass == CCSProbe:
-            acts = collect_acts(train_datasets[0], args.model, end_layer, noperiod=noperiod).to('cuda:0')
-            neg_acts = collect_acts(train_datasets[1], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            acts = collect_acts(train_datasets[0], args.activation_model, end_layer, noperiod=noperiod).to('cuda:0')
+            neg_acts = collect_acts(train_datasets[1], args.activation_model, end_layer, noperiod=noperiod).to('cuda:0')
             labels = t.Tensor(pd.read_csv(f'datasets/{train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
             probe = ProbeClass.from_data(acts, neg_acts, labels=labels, device='cuda:0')
 
@@ -173,35 +173,22 @@ if __name__ == '__main__':
         p_diff, tot = intervention_experiment(model, queries, direction, strength, hidden_states, batch_size=args.batch_size, remote=remote)
 
         # save results
-        if ProbeClass == 'random':
-            out = {
-                'model' : args.model,
-                'train_datasets' : train_datasets,
-                'val_dataset' : args.val_dataset,
-                'probe class' : 'random',
-                'prompt' : prompt,
-                'p_diff' : p_diff,
-                'tot' : tot,
-                'intervention' : strength,
-                'subset' : subset,
-                'hidden_states' : hidden_states,
-            }
-        else:
-            out = {
-                'model' : args.model,
-                'train_datasets' : train_datasets,
-                'val_dataset' : args.val_dataset,
-                'probe class' : ProbeClass.__name__,
-                'prompt' : prompt,
-                'p_diff' : p_diff,
-                'tot' : tot,
-                'intervention' : strength,
-                'subset' : subset,
-                'hidden_states' : hidden_states,
-            }
+        out = {
+            'model' : args.model,
+            'activation_model': args.activation_model,
+            'train_datasets' : train_datasets,
+            'val_dataset' : args.val_dataset,
+            'probe class' : ProbeClass.__name__,
+            'prompt' : prompt,
+            'p_diff' : p_diff,
+            'tot' : tot,
+            'intervention' : strength,
+            'subset' : subset,
+            'hidden_states' : hidden_states,
+        }
 
-        with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
+        with open('experimental_outputs/cross_model_interventions.json', 'r') as f:
             data = json.load(f)
         data.append(out)
-        with open('experimental_outputs/label_change_intervention_results.json', 'w') as f:
+        with open('experimental_outputs/cross_model_interventions.json', 'w') as f:
             json.dump(data, f, indent=4)
