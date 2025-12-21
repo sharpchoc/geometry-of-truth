@@ -178,5 +178,185 @@
         "gamma": 6.28642737865448e-09,
         "acc": 0.18911175429821014,
         "model": "llama-3.2-3B-Instruct"
+    },
+    {
+        "dataset": "cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Tianshui is in Canada.",
+            "The city of Novokuznetsk is in China.",
+            "The city of Samarkand is in Uzbekistan.",
+            "The city of Kimhae is in South Korea.",
+            "The city of Khulna is in Japan."
+        ],
+        "prompt": "The city of Tianshui is in Canada. FALSE\nThe city of Novokuznetsk is in China. FALSE\nThe city of Samarkand is in Uzbekistan. TRUE\nThe city of Kimhae is in South Korea. TRUE\nThe city of Khulna is in Japan. FALSE\n",
+        "gamma": -5.91278076171875e-05,
+        "acc": 0.8819583654403687,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "neg_cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Budapest is not in Hungary.",
+            "The city of Sevastopol is not in Ukraine.",
+            "The city of Porto Alegre is not in Brazil.",
+            "The city of Gwalior is not in India.",
+            "The city of Ouagadougou is not in China."
+        ],
+        "prompt": "The city of Budapest is not in Hungary. FALSE\nThe city of Sevastopol is not in Ukraine. FALSE\nThe city of Porto Alegre is not in Brazil. FALSE\nThe city of Gwalior is not in India. FALSE\nThe city of Ouagadougou is not in China. TRUE\n",
+        "gamma": -0.0001468658447265625,
+        "acc": 0.5244802236557007,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "larger_than",
+        "n_shots": 5,
+        "shots": [
+            "Seventy-two is larger than sixty-five.",
+            "Ninety-four is larger than fifty-three.",
+            "Fifty-one is larger than seventy-three.",
+            "Seventy-seven is larger than sixty-three.",
+            "Eighty-six is larger than sixty-three."
+        ],
+        "prompt": "Seventy-two is larger than sixty-five. TRUE\nNinety-four is larger than fifty-three. TRUE\nFifty-one is larger than seventy-three. FALSE\nSeventy-seven is larger than sixty-three. TRUE\nEighty-six is larger than sixty-three. TRUE\n",
+        "gamma": 0.00011157989501953125,
+        "acc": 0.8967088460922241,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "smaller_than",
+        "n_shots": 5,
+        "shots": [
+            "Seventy-nine is smaller than eighty-six.",
+            "Seventy-three is smaller than seventy-five.",
+            "Ninety-nine is smaller than fifty-five.",
+            "Seventy-four is smaller than sixty-six.",
+            "Seventy-six is smaller than eighty-six."
+        ],
+        "prompt": "Seventy-nine is smaller than eighty-six. TRUE\nSeventy-three is smaller than seventy-five. TRUE\nNinety-nine is smaller than fifty-five. FALSE\nSeventy-four is smaller than sixty-six. FALSE\nSeventy-six is smaller than eighty-six. TRUE\n",
+        "gamma": 4.76837158203125e-05,
+        "acc": 0.6394937038421631,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'multiplicar' means 'to multiply'.",
+            "The Spanish word 'libre' means 'free'.",
+            "The Spanish word 'grupo' means 'group'.",
+            "The Spanish word 'historia' means 'history'.",
+            "The Spanish word 'ganar' means 'to use'."
+        ],
+        "prompt": "The Spanish word 'multiplicar' means 'to multiply'. TRUE\nThe Spanish word 'libre' means 'free'. TRUE\nThe Spanish word 'grupo' means 'group'. TRUE\nThe Spanish word 'historia' means 'history'. TRUE\nThe Spanish word 'ganar' means 'to use'. FALSE\n",
+        "gamma": 2.0023435354232788e-08,
+        "acc": 0.6991404294967651,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "neg_sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'libro' does not mean 'industry'.",
+            "The Spanish word 'matar' does not mean 'bread'.",
+            "The Spanish word 'mezclar' does not mean 'to mix'.",
+            "The Spanish word 'corto' does not mean 'letter'.",
+            "The Spanish word 'ola' does not mean 'wave'."
+        ],
+        "prompt": "The Spanish word 'libro' does not mean 'industry'. TRUE\nThe Spanish word 'matar' does not mean 'bread'. TRUE\nThe Spanish word 'mezclar' does not mean 'to mix'. FALSE\nThe Spanish word 'corto' does not mean 'letter'. TRUE\nThe Spanish word 'ola' does not mean 'wave'. FALSE\n",
+        "gamma": 1.367880031466484e-09,
+        "acc": 0.30085960030555725,
+        "model": "llama-3.1-8B"
+    },
+    {
+        "dataset": "cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Sarajevo is in South Africa.",
+            "The city of Muscat is in Oman.",
+            "The city of Tangshan is in India.",
+            "The city of Bhubaneswar is in India.",
+            "The city of Cuiaba is in Brazil."
+        ],
+        "prompt": "The city of Sarajevo is in South Africa. FALSE\nThe city of Muscat is in Oman. TRUE\nThe city of Tangshan is in India. FALSE\nThe city of Bhubaneswar is in India. TRUE\nThe city of Cuiaba is in Brazil. TRUE\n",
+        "gamma": -0.00041961669921875,
+        "acc": 0.9584171175956726,
+        "model": "llama-3.1-8B-Instruct"
+    },
+    {
+        "dataset": "neg_cities",
+        "n_shots": 5,
+        "shots": [
+            "The city of Wanxian is not in Algeria.",
+            "The city of Zhumadian is not in China.",
+            "The city of Serang is not in Indonesia.",
+            "The city of Chizhou is not in the Republic of the Congo.",
+            "The city of Hengyang is not in China."
+        ],
+        "prompt": "The city of Wanxian is not in Algeria. TRUE\nThe city of Zhumadian is not in China. FALSE\nThe city of Serang is not in Indonesia. FALSE\nThe city of Chizhou is not in the Republic of the Congo. TRUE\nThe city of Hengyang is not in China. FALSE\n",
+        "gamma": -6.198883056640625e-05,
+        "acc": 0.4433266222476959,
+        "model": "llama-3.1-8B-Instruct"
+    },
+    {
+        "dataset": "larger_than",
+        "n_shots": 5,
+        "shots": [
+            "Seventy-nine is larger than fifty-two.",
+            "Eighty-two is larger than sixty-four.",
+            "Ninety-six is larger than fifty-one.",
+            "Seventy-three is larger than sixty-six.",
+            "Fifty-two is larger than ninety-one."
+        ],
+        "prompt": "Seventy-nine is larger than fifty-two. TRUE\nEighty-two is larger than sixty-four. TRUE\nNinety-six is larger than fifty-one. TRUE\nSeventy-three is larger than sixty-six. TRUE\nFifty-two is larger than ninety-one. FALSE\n",
+        "gamma": -0.00025177001953125,
+        "acc": 0.9306328892707825,
+        "model": "llama-3.1-8B-Instruct"
+    },
+    {
+        "dataset": "smaller_than",
+        "n_shots": 5,
+        "shots": [
+            "Sixty-nine is smaller than fifty-eight.",
+            "Sixty-nine is smaller than seventy-seven.",
+            "Ninety-two is smaller than eighty-five.",
+            "Ninety-nine is smaller than ninety-four.",
+            "Ninety-eight is smaller than eighty-two."
+        ],
+        "prompt": "Sixty-nine is smaller than fifty-eight. FALSE\nSixty-nine is smaller than seventy-seven. TRUE\nNinety-two is smaller than eighty-five. FALSE\nNinety-nine is smaller than ninety-four. FALSE\nNinety-eight is smaller than eighty-two. FALSE\n",
+        "gamma": -0.000377655029296875,
+        "acc": 0.5736708641052246,
+        "model": "llama-3.1-8B-Instruct"
+    },
+    {
+        "dataset": "sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'roca' means 'rock'.",
+            "The Spanish word 'alto' means 'space'.",
+            "The Spanish word 'mapa' means 'map'.",
+            "The Spanish word 'grupo' means 'group'.",
+            "The Spanish word 'isla' means 'island'."
+        ],
+        "prompt": "The Spanish word 'roca' means 'rock'. TRUE\nThe Spanish word 'alto' means 'space'. FALSE\nThe Spanish word 'mapa' means 'map'. TRUE\nThe Spanish word 'grupo' means 'group'. TRUE\nThe Spanish word 'isla' means 'island'. TRUE\n",
+        "gamma": -3.055902197957039e-09,
+        "acc": 0.5616046190261841,
+        "model": "llama-3.1-8B-Instruct"
+    },
+    {
+        "dataset": "neg_sp_en_trans",
+        "n_shots": 5,
+        "shots": [
+            "The Spanish word 'morir' does not mean 'to die'.",
+            "The Spanish word 'hacer' does not mean 'neck'.",
+            "The Spanish word 'comprar' does not mean 'dry'.",
+            "The Spanish word 'cebra' does not mean 'to imagine'.",
+            "The Spanish word 'campana' does not mean 'to connect'."
+        ],
+        "prompt": "The Spanish word 'morir' does not mean 'to die'. FALSE\nThe Spanish word 'hacer' does not mean 'neck'. TRUE\nThe Spanish word 'comprar' does not mean 'dry'. TRUE\nThe Spanish word 'cebra' does not mean 'to imagine'. TRUE\nThe Spanish word 'campana' does not mean 'to connect'. TRUE\n",
+        "gamma": -9.42964106798172e-09,
+        "acc": 0.7277936935424805,
+        "model": "llama-3.1-8B-Instruct"
     }
 ]

@@ -106,8 +106,8 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--datasets', type=str, nargs='+', help='datasets to evaluate on')
-    parser.add_argument('--model', type=str, default='llama-3.2-3B-Instruct', help='model size to evaluate')
-    parser.add_argument('--n_shots', type=int, default=5, help='number of shots to use')
+    parser.add_argument('--model', type=str, default='llama-3.1-8B-Instruct', help='model size to evaluate')
+    parser.add_argument('--n_shots', type=int, default=3, help='number of shots to use')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size to use')
     parser.add_argument('--uncalibrated', action='store_true', default=False, help='set flag if using uncalibrated few shot')
     parser.add_argument('--device', default='cuda', help='device to use')

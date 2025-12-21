@@ -122,9 +122,9 @@ The Spanish word 'uno' means 'one'. This statement is:"""
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='llama-3.2-3B')
+    parser.add_argument('--model', type=str, default='llama-3.1-8B')
     parser.add_argument('--continuation_idx', type=int, default=None)
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
 
-    patching_experiment(model_name=args.model, continuation_idx=None, device=args.device, patch_true_on_false=False)
+    patching_experiment(model_name=args.model, continuation_idx=None, device=args.device, patch_true_on_false=True)

@@ -9,6 +9,7 @@ import plotly.express as px
 import json
 import argparse
 import configparser
+from itertools import product
 
 DEBUG = False
 if DEBUG:
@@ -76,14 +77,9 @@ def prepare_data(prompt, dataset, subset='all'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='llama-3.2-3B')
-    parser.add_argument('--activations_model', default='llama-3.2-3B-Instruct')
-    parser.add_argument('--probe', default='MMProbe')
-    parser.add_argument('--train_datasets', nargs='+', default=['likely'], type=str)
+    parser.add_argument('--model', default='llama-3.1-8B-Instruct')
     parser.add_argument('--val_dataset', default = 'sp_en_trans', type=str)
     parser.add_argument('--batch_size', default=32, type=int)
-    parser.add_argument('--intervention', default='2', type=str)
-    parser.add_argument('--subset', default='false', type=str)
     parser.add_argument('--device', default='cuda', type=str)
     args = parser.parse_args()
 
@@ -97,30 +93,31 @@ if __name__ == '__main__':
     start_layer = eval(config[args.model]['intervene_layer'])
     end_layer = eval(config[args.model]['probe_layer'])
     noperiod = eval(config[args.model]['noperiod'])
-    if args.activations_model is None:
-        args.activations_model = args.model
-    if noperiod:
-        hidden_states = [
-            (layer, -1) for layer in range(start_layer, end_layer + 1)
-        ]
-    else:
-        hidden_states = []
-        for layer in range(start_layer, end_layer + 1):
-            hidden_states.append((layer, -1))
-            hidden_states.append((layer, 0))
-    for train_set in [['cities'], ['larger_than'], ['larger_than', 'smaller_than']]:
-        print(f"train set {train_set}")
-        if train_set[0] == 'random':
-            args.train_datasets = ['cities']
+
+    probes = ['MMProbe', 'LRProbe']
+    train_sets = [['cities'], ['larger_than'], ['larger_than', 'smaller_than']]
+    subsets = ['true', 'false']
+    strengths = [-5, -2, -1, 0, 1, 2, 5]
+
+    for probe, train_datasets, subset, strength in product(probes, train_sets, subsets, strengths):
+        print(f'testing {probe}, {train_datasets}, {subset}, {strength}')
+        if noperiod:
+            hidden_states = [
+                (layer, -1) for layer in range(start_layer, end_layer + 1)
+            ]
         else:
-            args.train_datasets = train_set
+            hidden_states = []
+            for layer in range(start_layer, end_layer + 1):
+                hidden_states.append((layer, -1))
+                hidden_states.append((layer, 0))
+
         print('training probe...')
         # get direction along which to intervene
-        ProbeClass = eval(args.probe)
+        ProbeClass = eval(probe)
         if ProbeClass == LRProbe or ProbeClass == MMProbe or ProbeClass == 'random':
             acts, labels = [], []
-            for dataset in args.train_datasets:
-                acts.append(collect_acts(dataset, args.activations_model, end_layer, noperiod=noperiod).to('cuda:0'))
+            for dataset in train_datasets:
+                acts.append(collect_acts(dataset, args.model, end_layer, noperiod=noperiod).to('cuda:0'))
                 labels.append(t.Tensor(pd.read_csv(f'datasets/{dataset}.csv')['label'].tolist()).to('cuda:0'))
             acts, labels = t.cat(acts), t.cat(labels)
             if ProbeClass == LRProbe or ProbeClass == MMProbe:
@@ -129,9 +126,9 @@ if __name__ == '__main__':
                 probe = MMProbe.from_data(acts, labels, device='cuda:0')
                 probe.direction = t.nn.Parameter(t.randn_like(probe.direction))
         elif ProbeClass == CCSProbe:
-            acts = collect_acts(args.train_datasets[0], args.activations_model, end_layer, noperiod=noperiod).to('cuda:0')
-            neg_acts = collect_acts(args.train_datasets[1], args.activations_model, end_layer, noperiod=noperiod).to('cuda:0')
-            labels = t.Tensor(pd.read_csv(f'datasets/{args.train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
+            acts = collect_acts(train_datasets[0], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            neg_acts = collect_acts(train_datasets[1], args.model, end_layer, noperiod=noperiod).to('cuda:0')
+            labels = t.Tensor(pd.read_csv(f'datasets/{train_datasets[0]}.csv')['label'].tolist()).to('cuda:0')
             probe = ProbeClass.from_data(acts, neg_acts, labels=labels, device='cuda:0')
 
         direction = probe.direction
@@ -140,15 +137,7 @@ if __name__ == '__main__':
         direction = direction / direction.norm()
         diff = (true_mean - false_mean) @ direction
         direction = diff * direction
-        # direction is from true to false
         direction = direction.cuda()
-        
-        if train_set[0] == 'random':
-            with t.no_grad():
-                rand_dir = t.randn_like(probe.direction)
-                rand_dir = rand_dir / rand_dir.norm()
-                direction.copy_(rand_dir)
-            args.train_datasets = train_set
 
         # set prompt (hardcoded for now)
         if args.model == 'llama-2-70b' and args.val_dataset == 'sp_en_trans':
@@ -172,39 +161,32 @@ if __name__ == '__main__':
     """
         
         # prepare data
-        for side in ['true', 'false']:
-            args.subset = side
-            print(f"subset: {args.subset}")
-            queries = prepare_data(prompt, args.val_dataset, subset=args.subset)
+        queries = prepare_data(prompt, args.val_dataset, subset=subset)
 
-            print('running intervention experiment...')
-            # do intervention experiment
-            if args.subset == 'true':
-                strengths = [-2, -1, 0]
-            elif args.subset == 'false':
-                strengths = [0, 1, 2]
-            else:
-                strengths = [-2, -1, 0, 1, 2]
-            for strength in strengths:
-                p_diff, tot = intervention_experiment(model, queries, direction, strength, hidden_states, batch_size=args.batch_size, remote=remote)
+        print('running intervention experiment...')
+        # do intervention experiment
+        if strength > 0 and subset == 'true':
+            continue
+        elif strength < 0 and subset == 'false':
+            continue
+        p_diff, tot = intervention_experiment(model, queries, direction, strength, hidden_states, batch_size=args.batch_size, remote=remote)
 
-                # save results
-                out = {
-                    'model' : args.model,
-                    'train_datasets' : args.train_datasets,
-                    'val_dataset' : args.val_dataset,
-                    'probe class' : ProbeClass.__name__,
-                    'prompt' : prompt,
-                    'p_diff' : p_diff,
-                    'tot' : tot,
-                    'intervention_strength' : strength,
-                    'subset' : args.subset,
-                    'hidden_states' : hidden_states,
-                    'activation_model': args.activations_model,
-                }
+        # save results
+        out = {
+            'model' : args.model,
+            'train_datasets' : train_datasets,
+            'val_dataset' : args.val_dataset,
+            'probe class' : ProbeClass.__name__,
+            'prompt' : prompt,
+            'p_diff' : p_diff,
+            'tot' : tot,
+            'intervention' : strength,
+            'subset' : subset,
+            'hidden_states' : hidden_states,
+        }
 
-                with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
-                    data = json.load(f)
-                data.append(out)
-                with open('experimental_outputs/label_change_intervention_results.json', 'w') as f:
-                    json.dump(data, f, indent=4)
+        with open('experimental_outputs/label_change_intervention_results.json', 'r') as f:
+            data = json.load(f)
+        data.append(out)
+        with open('experimental_outputs/label_change_intervention_results.json', 'w') as f:
+            json.dump(data, f, indent=4)

@@ -1089,5 +1089,259 @@
     "layer": 13,
     "oracle": false,
     "noperiod": false
+  },
+  {
+    "cities": {
+      "cities": 1.0,
+      "neg_cities": 0.45721927285194397,
+      "larger_than": 0.812626302242279,
+      "smaller_than": 0.8585858941078186,
+      "sp_en_trans": 0.9971751570701599,
+      "neg_sp_en_trans": 0.2118644118309021
+    },
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 0.996666669845581,
+      "larger_than": 0.9373737573623657,
+      "smaller_than": 0.925757646560669,
+      "sp_en_trans": 1.0,
+      "neg_sp_en_trans": 0.9180790781974792
+    },
+    "larger_than": {
+      "cities": 0.8208556175231934,
+      "neg_cities": 0.9692513346672058,
+      "larger_than": 1.0,
+      "smaller_than": 0.8621212244033813,
+      "sp_en_trans": 0.9322034120559692,
+      "neg_sp_en_trans": 0.8898305296897888
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.8175134062767029,
+      "neg_cities": 0.9953208565711975,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9745762944221497,
+      "neg_sp_en_trans": 0.9293785095214844
+    },
+    "model": "llama-3.1-8B",
+    "probe": "LRProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities": {
+      "cities": 1.0,
+      "neg_cities": 0.7185829281806946,
+      "larger_than": 0.9287879467010498,
+      "smaller_than": 0.9525253176689148,
+      "sp_en_trans": 1.0,
+      "neg_sp_en_trans": 0.06497175246477127
+    },
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 0.996666669845581,
+      "larger_than": 0.9631313681602478,
+      "smaller_than": 0.9661616683006287,
+      "sp_en_trans": 0.9774011373519897,
+      "neg_sp_en_trans": 1.0
+    },
+    "larger_than": {
+      "cities": 0.7820855975151062,
+      "neg_cities": 0.990641713142395,
+      "larger_than": 1.0,
+      "smaller_than": 0.8722222447395325,
+      "sp_en_trans": 0.9548022747039795,
+      "neg_sp_en_trans": 0.9548022747039795
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.8342246413230896,
+      "neg_cities": 0.9966577887535095,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9858757257461548,
+      "neg_sp_en_trans": 0.9378530979156494
+    },
+    "model": "llama-3.1-8B",
+    "probe": "MMProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 0.996666669845581,
+      "larger_than": 0.9505050778388977,
+      "smaller_than": 0.9095960259437561,
+      "sp_en_trans": 0.9971751570701599,
+      "neg_sp_en_trans": 0.9745762944221497
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.8395721912384033,
+      "neg_cities": 0.9772727489471436,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9661017060279846,
+      "neg_sp_en_trans": 0.8700565099716187
+    },
+    "model": "llama-3.1-8B",
+    "probe": "CCSProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities": 1.0,
+    "neg_cities": 0.996666669845581,
+    "larger_than": 1.0,
+    "smaller_than": 1.0,
+    "sp_en_trans": 1.0,
+    "neg_sp_en_trans": 1.0,
+    "model": "llama-3.1-8B",
+    "probe": "LRProbe",
+    "oracle": true,
+    "layer": 13,
+    "noperiod": false
+  },
+  {
+    "cities": 1.0,
+    "neg_cities": 0.996666669845581,
+    "larger_than": 1.0,
+    "smaller_than": 1.0,
+    "sp_en_trans": 1.0,
+    "neg_sp_en_trans": 1.0,
+    "model": "llama-3.1-8B",
+    "probe": "MMProbe",
+    "oracle": true,
+    "layer": 13,
+    "noperiod": false
+  },
+  {
+    "cities": {
+      "cities": 1.0,
+      "neg_cities": 0.7573529481887817,
+      "larger_than": 0.9979798197746277,
+      "smaller_than": 0.9944444894790649,
+      "sp_en_trans": 0.991525411605835,
+      "neg_sp_en_trans": 0.0451977401971817
+    },
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 1.0,
+      "larger_than": 0.9994949698448181,
+      "smaller_than": 0.9969697594642639,
+      "sp_en_trans": 0.9971751570701599,
+      "neg_sp_en_trans": 0.991525411605835
+    },
+    "larger_than": {
+      "cities": 0.9739304780960083,
+      "neg_cities": 0.9933155179023743,
+      "larger_than": 1.0,
+      "smaller_than": 0.9873737692832947,
+      "sp_en_trans": 0.991525411605835,
+      "neg_sp_en_trans": 0.7429378628730774
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.9672459959983826,
+      "neg_cities": 0.9939839839935303,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9887005686759949,
+      "neg_sp_en_trans": 0.9209039807319641
+    },
+    "model": "llama-3.1-8B-Instruct",
+    "probe": "LRProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities": {
+      "cities": 1.0,
+      "neg_cities": 0.8495989441871643,
+      "larger_than": 0.9984849095344543,
+      "smaller_than": 0.9924243092536926,
+      "sp_en_trans": 0.9943503141403198,
+      "neg_sp_en_trans": 0.20621469616889954
+    },
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 1.0,
+      "larger_than": 0.9984849095344543,
+      "smaller_than": 0.9944444894790649,
+      "sp_en_trans": 0.9887005686759949,
+      "neg_sp_en_trans": 1.0
+    },
+    "larger_than": {
+      "cities": 0.9605615139007568,
+      "neg_cities": 0.9866310358047485,
+      "larger_than": 1.0,
+      "smaller_than": 0.9893940091133118,
+      "sp_en_trans": 0.991525411605835,
+      "neg_sp_en_trans": 0.8898305296897888
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.9592246413230896,
+      "neg_cities": 0.9886363744735718,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9887005686759949,
+      "neg_sp_en_trans": 0.8757061958312988
+    },
+    "model": "llama-3.1-8B-Instruct",
+    "probe": "MMProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities+neg_cities": {
+      "cities": 1.0,
+      "neg_cities": 1.0,
+      "larger_than": 0.9994949698448181,
+      "smaller_than": 0.9974747896194458,
+      "sp_en_trans": 0.9971751570701599,
+      "neg_sp_en_trans": 1.0
+    },
+    "larger_than+smaller_than": {
+      "cities": 0.9705882668495178,
+      "neg_cities": 0.9979946613311768,
+      "larger_than": 1.0,
+      "smaller_than": 1.0,
+      "sp_en_trans": 0.9830508232116699,
+      "neg_sp_en_trans": 0.9802259802818298
+    },
+    "model": "llama-3.1-8B-Instruct",
+    "probe": "CCSProbe",
+    "layer": 13,
+    "oracle": false,
+    "noperiod": false
+  },
+  {
+    "cities": 1.0,
+    "neg_cities": 1.0,
+    "larger_than": 1.0,
+    "smaller_than": 1.0,
+    "sp_en_trans": 1.0,
+    "neg_sp_en_trans": 1.0,
+    "model": "llama-3.1-8B-Instruct",
+    "probe": "LRProbe",
+    "oracle": true,
+    "layer": 13,
+    "noperiod": false
+  },
+  {
+    "cities": 1.0,
+    "neg_cities": 1.0,
+    "larger_than": 1.0,
+    "smaller_than": 1.0,
+    "sp_en_trans": 1.0,
+    "neg_sp_en_trans": 1.0,
+    "model": "llama-3.1-8B-Instruct",
+    "probe": "MMProbe",
+    "oracle": true,
+    "layer": 13,
+    "noperiod": false
   }
 ]

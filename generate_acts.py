@@ -53,7 +53,7 @@ if __name__ == "__main__":
     read statements from dataset, record activations in given layers, and save to specified files
     """
     parser = argparse.ArgumentParser(description="Generate activations for statements in a dataset")
-    parser.add_argument("--model", default="llama-3.2-3B-Instruct",
+    parser.add_argument("--model", default="llama-3.1-8B-Instruct",
                         help="Size of the model to use. Options are 7B or 30B")
     parser.add_argument("--layers", nargs='+', type=int,
                         help="Layers to save embeddings from")
